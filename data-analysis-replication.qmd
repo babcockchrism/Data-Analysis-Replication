@@ -34,7 +34,7 @@ This paper is looking into the structural, pharmacological, and therapeutic prop
 
 The larger point this paper is trying to make is that many of the therapeutic effects seen in antidepressive, antipsychotic, and anti-anxiety serotonergic medications are likely mainly attributed to their activity at the 5-HT1A receptor, not the 5-HT2A receptor (which is responsible for sensory disturbances associated with serotonergic medication); therefore, 5-HT1A-specific compounds may be the answer to alleviating these side effects.
 
-I will be replicating the behavioral data in Figures 5d-e and Extended Data Figures 7d-h, since these are the only data in which statistical tests were done beyond standard error calculation.
+I will be replicating the behavioral data in Figures 5d-e and Extended Data Figures 7d-h, since these are the only data in which statistical tests were done beyond standard error calculation. Figure 5b will be used for an example of the visualization analysis.
 
 ## Visualization of Data
 
@@ -58,7 +58,117 @@ And now we can load in our data, starting with Figure 5:
 knitr::include_graphics("images/Figure 5.png")
 ```
 
-Let's read in the associated data tables, starting with Figure 5d:
+Let's read in the associated data tables, starting with Figure 5b:
+
+``` {r}
+f <- read_excel(path = "data/41586_2024_7403_MOESM5_ESM.xlsx", sheet = "Fig 5", range = "C14:O19", col_names = FALSE, col_types = "text", .name_repair = "unique_quiet") # reads in the data table we need specifically
+f <- t(f) # swaps columns with rows, so we can work with the table easier
+f <- row_to_names(f, row_number = 1) # assigns proper names to columns
+vehmeo <- rep("Vehicle + 4-F,5-MeO-PyrT", times = 6)
+waymeo <- rep("WAY-100,635 + 4-F,5-MeO-PyrT", times = 6)
+treatment <- append(vehmeo, values = waymeo)
+f[1:12] = treatment # fills out missing values for stress condition
+f <- as_tibble(f, .name_repair = "universal_quiet") # converts table to a format we can work with easier
+f1 <- f %>%
+  select(..4.F..5.MeO.pyrT..Dose..mg.kg., ...0) %>%
+  mutate(Treatment = ..4.F..5.MeO.pyrT..Dose..mg.kg., Head.Twitch.Response = as.numeric(...0)) %>%
+  filter(!is.na(Head.Twitch.Response))
+f1 <- f1 %>%
+  mutate(Dosage = rep("0", times = nrow(f1))) %>%
+  select(Treatment, Dosage, Head.Twitch.Response) # separates all data points since each one is from a different subject, and makes an extra column that keeps track of treatment condition
+f2 <- f %>%
+  select(..4.F..5.MeO.pyrT..Dose..mg.kg., ..0.1) %>%
+  mutate(Treatment = ..4.F..5.MeO.pyrT..Dose..mg.kg., Head.Twitch.Response = as.numeric(..0.1)) %>%
+  filter(!is.na(Head.Twitch.Response))
+f2 <- f2 %>%
+  mutate(Dosage = rep("0.1", times = nrow(f2))) %>%
+  select(Treatment, Dosage, Head.Twitch.Response)
+f3 <- f %>%
+  select(..4.F..5.MeO.pyrT..Dose..mg.kg., ..0.3) %>%
+  mutate(Treatment = ..4.F..5.MeO.pyrT..Dose..mg.kg., Head.Twitch.Response = as.numeric(..0.3)) %>%
+  filter(!is.na(Head.Twitch.Response))
+f3 <- f3 %>%
+  mutate(Dosage = rep("0.3", times = nrow(f3))) %>%
+  select(Treatment, Dosage, Head.Twitch.Response)
+f4 <- f %>%
+  select(..4.F..5.MeO.pyrT..Dose..mg.kg., ...1) %>%
+  mutate(Treatment = ..4.F..5.MeO.pyrT..Dose..mg.kg., Head.Twitch.Response = as.numeric(...1)) %>%
+  filter(!is.na(Head.Twitch.Response))
+f4 <- f4 %>%
+  mutate(Dosage = rep("1", times = nrow(f4))) %>%
+  select(Treatment, Dosage, Head.Twitch.Response)
+f5 <- f %>%
+  select(..4.F..5.MeO.pyrT..Dose..mg.kg., ...3) %>%
+  mutate(Treatment = ..4.F..5.MeO.pyrT..Dose..mg.kg., Head.Twitch.Response = as.numeric(...3)) %>%
+  filter(!is.na(Head.Twitch.Response))
+f5 <- f5 %>%
+  mutate(Dosage = rep("3", times = nrow(f5))) %>%
+  select(Treatment, Dosage, Head.Twitch.Response)
+f5b1 <- tibble(Treatment = character(), Dosage = character(), Head.Twitch.Response = numeric())
+f5b1 <- f5b1 %>% # combines all separate treatments into a single usable table
+  add_row(f1) %>%
+  add_row(f2) %>%
+  add_row(f3) %>%
+  add_row(f4) %>%
+  add_row(f5)
+print(head(f5b1))
+```
+
+``` {r}
+f <- read_excel(path = "data/41586_2024_7403_MOESM5_ESM.xlsx", sheet = "Fig 5", range = "Q14:AC19", col_names = FALSE, col_types = "text", .name_repair = "unique_quiet") # reads in the data table we need specifically
+f <- t(f) # swaps columns with rows, so we can work with the table easier
+f <- row_to_names(f, row_number = 1) # assigns proper names to columns
+vehmeo <- rep("Vehicle + 5-MeO-MET", times = 6)
+waymeo <- rep("WAY-100,635 + 5-MeO-MET", times = 6)
+treatment <- append(vehmeo, values = waymeo)
+f[1:12] = treatment # fills out missing values for stress condition
+f <- as_tibble(f, .name_repair = "universal_quiet") # converts table to a format we can work with easier
+f1 <- f %>%
+  select(..5.MeO.MET..Dose..mg.kg., ...0) %>%
+  mutate(Treatment = ..5.MeO.MET..Dose..mg.kg., Head.Twitch.Response = as.numeric(...0)) %>%
+  filter(!is.na(Head.Twitch.Response))
+f1 <- f1 %>%
+  mutate(Dosage = rep("0", times = nrow(f1))) %>%
+  select(Treatment, Dosage, Head.Twitch.Response) # separates all data points since each one is from a different subject, and makes an extra column that keeps track of treatment condition
+f2 <- f %>%
+  select(..5.MeO.MET..Dose..mg.kg., ..0.3) %>%
+  mutate(Treatment = ..5.MeO.MET..Dose..mg.kg., Head.Twitch.Response = as.numeric(..0.3)) %>%
+  filter(!is.na(Head.Twitch.Response))
+f2 <- f2 %>%
+  mutate(Dosage = rep("0.3", times = nrow(f2))) %>%
+  select(Treatment, Dosage, Head.Twitch.Response)
+f3 <- f %>%
+  select(..5.MeO.MET..Dose..mg.kg., ...1) %>%
+  mutate(Treatment = ..5.MeO.MET..Dose..mg.kg., Head.Twitch.Response = as.numeric(...1)) %>%
+  filter(!is.na(Head.Twitch.Response))
+f3 <- f3 %>%
+  mutate(Dosage = rep("1", times = nrow(f3))) %>%
+  select(Treatment, Dosage, Head.Twitch.Response)
+f4 <- f %>%
+  select(..5.MeO.MET..Dose..mg.kg., ...3) %>%
+  mutate(Treatment = ..5.MeO.MET..Dose..mg.kg., Head.Twitch.Response = as.numeric(...3)) %>%
+  filter(!is.na(Head.Twitch.Response))
+f4 <- f4 %>%
+  mutate(Dosage = rep("3", times = nrow(f4))) %>%
+  select(Treatment, Dosage, Head.Twitch.Response)
+f5 <- f %>%
+  select(..5.MeO.MET..Dose..mg.kg., ...10) %>%
+  mutate(Treatment = ..5.MeO.MET..Dose..mg.kg., Head.Twitch.Response = as.numeric(...10)) %>%
+  filter(!is.na(Head.Twitch.Response))
+f5 <- f5 %>%
+  mutate(Dosage = rep("10", times = nrow(f5))) %>%
+  select(Treatment, Dosage, Head.Twitch.Response)
+f5b2 <- tibble(Treatment = character(), Dosage = character(), Head.Twitch.Response = numeric())
+f5b2 <- f5b2 %>% # combines all separate treatments into a single usable table
+  add_row(f1) %>%
+  add_row(f2) %>%
+  add_row(f3) %>%
+  add_row(f4) %>%
+  add_row(f5)
+print(head(f5b2))
+```
+
+Then Figure 5d:
 
 ``` {r}
 f <- read_excel(path = "data/41586_2024_7403_MOESM5_ESM.xlsx", sheet = "Fig 5", range = "C23:BD27", col_names = FALSE, col_types = "text", .name_repair = "unique_quiet") # reads in the data table we need specifically
@@ -352,6 +462,35 @@ print(head(f7h))
 
 ## Statistical Replications/Reanalysis
 
+### Figure 5b
+
+``` {r}
+#| out-width: "100%"
+knitr::include_graphics("images/Figure 5b.png")
+```
+
+This data was not analyzed using a statistical test, but instead visually. Let's remake that:
+
+``` {r}
+plot1 <- ggplot(data = f5b1, aes(x = Dosage, y = Head.Twitch.Response, fill = Treatment)) +
+  stat_summary(geom = "bar", fun = mean, position = "dodge") +
+  ylim(0, 80) +
+  theme(legend.position = "bottom") +
+  scale_fill_manual("legend", values = c("Vehicle + 4-F,5-MeO-PyrT" = "gray", "WAY-100,635 + 4-F,5-MeO-PyrT" = "purple")) +
+  geom_jitter(position = position_jitterdodge()) +
+  stat_summary(geom = "errorbar", fun.data = mean_se, position = "dodge")
+plot2 <- ggplot(data = f5b2, aes(x = Dosage, y = Head.Twitch.Response, fill = Treatment)) +
+  stat_summary(geom = "bar", fun = mean, position = "dodge") +
+  ylim(0, 80) +
+  theme(legend.position = "bottom") +
+  scale_fill_manual("legend", values = c("Vehicle + 5-MeO-MET" = "black", "WAY-100,635 + 5-MeO-MET" = "blue")) +
+  geom_jitter(position = position_jitterdodge()) +
+  stat_summary(geom = "errorbar", fun.data = mean_se, position = "dodge")
+gridExtra::grid.arrange(plot1, plot2, nrow = 1)
+```
+
+Looks perfect! we have the error bars and individual data points too. And it's visually very clear that the only thing causing head twitches to any relevant degree is 5-MeO-DMT when it's combined with WAY-100635.
+
 ### Figure 5d
 
 ``` {r}
@@ -375,7 +514,10 @@ Looks great! now let's graph it:
 
 ``` {r}
 ggplot(data = f5d, aes(x = Treatment, y = Interaction.Ratio, fill = Condition)) +
-  geom_bar(position = "dodge", stat = "identity")
+  stat_summary(geom = "bar", fun = mean, position = "dodge") +
+  theme(legend.position = "bottom") +
+  geom_jitter(position = position_jitterdodge()) +
+  stat_summary(geom = "errorbar", fun.data = mean_se, position = "dodge")
 ```
 
 Now let's do that two-way ANOVA. It looks like they were trying to look at main effect of stress condition, main effect of treatment group, and any interaction effects between the two:
@@ -422,7 +564,10 @@ Great! Let's graph this one too:
 
 ``` {r}
 ggplot(data = f5e, aes(x = Treatment, y = Sucrose.Preference, fill = Condition)) +
-  geom_bar(position = "dodge", stat = "identity")
+  stat_summary(geom = "bar", fun = mean, position = "dodge") +
+  theme(legend.position = "bottom") +
+  geom_jitter(position = position_jitterdodge()) +
+  stat_summary(geom = "errorbar", fun.data = mean_se, position = "dodge")
 ```
 
 We can do this one's two-way ANOVA now:
@@ -459,7 +604,10 @@ ED Fig 7d was done using one-way ANOVAs with multiple comparisons and Tukey's po
 
 ``` {r}
 ggplot(data = f7d1, aes(x = Treatment, y = Distance.Traveled.cm)) +
-  geom_bar(position = "dodge", stat = "identity")
+  stat_summary(geom = "bar", fun = mean, position = "dodge") +
+  theme(legend.position = "bottom") +
+  geom_jitter(position = position_jitterdodge()) +
+  stat_summary(geom = "errorbar", fun.data = mean_se, position = "dodge")
 ```
 
 And now let's get into the ANOVA:
@@ -518,7 +666,10 @@ ED Fig 7e was analyzed by two-way ANOVA and Fisher's LSD post-hoc test. Let's gr
 
 ``` {r}
 ggplot(data = f7e, aes(x = Dosage, y = Distance.Moved.cm, fill = Condition)) +
-  geom_bar(position = "dodge", stat = "identity")
+  stat_summary(geom = "bar", fun = mean, position = "dodge") +
+  theme(legend.position = "bottom") +
+  geom_jitter(position = position_jitterdodge()) +
+  stat_summary(geom = "errorbar", fun.data = mean_se, position = "dodge")
 ```
 
 Now let's do the ANOVA:
@@ -548,7 +699,10 @@ ED Fig 7f was also analyzed using two-way ANOVA and Fisher's least-significant d
 
 ``` {r}
 ggplot(data = f7f, aes(x = Dosage, y = Interaction.Ratio, fill = Condition)) +
-  geom_bar(position = "dodge", stat = "identity")
+  stat_summary(geom = "bar", fun = mean, position = "dodge") +
+  theme(legend.position = "bottom") +
+  geom_jitter(position = position_jitterdodge()) +
+  stat_summary(geom = "errorbar", fun.data = mean_se, position = "dodge")
 ```
 
 And onto the ANOVA:
@@ -578,7 +732,10 @@ Again, this one was analyzed using two-way ANOVA and a Fisher's LSD post-hoc tes
 
 ``` {r}
 ggplot(data = f7g, aes(x = Dosage, y = Interaction.Ratio, fill = Condition)) +
-  geom_bar(position = "dodge", stat = "identity")
+  stat_summary(geom = "bar", fun = mean, position = "dodge") +
+  theme(legend.position = "bottom") +
+  geom_jitter(position = position_jitterdodge()) +
+  stat_summary(geom = "errorbar", fun.data = mean_se, position = "dodge")
 ```
 
 The two-way ANOVA:
